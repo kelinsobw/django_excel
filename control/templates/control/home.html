@@ -1,10 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h1>Hi</h1>
-</body>
-</html>
+<style>
+table, th, td {
+  border:1px solid black;
+}
+</style>
+{% extends "control/base.html" %}
+{% block title %}Note views{% endblock %}
+{% block content %}
+<div class="databases">
+    <div class="row">
+<table>
+<colgroup>
+    <col span="2" style="background:Khaki"><!-- С помощью этой конструкции задаем цвет фона для первых двух столбцов таблицы-->
+    <col style="background-color:LightCyan"><!-- Задаем цвет фона для следующего (одного) столбца таблицы-->
+  </colgroup>
+{% for database in data %}
+<tr>
+        {% for element in database %}
+    <td>{{element}}</td>
+            {% endfor %}
+    </tr>
+        {% endfor %}
+</table>
+</div>
+</div>
+{% endblock %}

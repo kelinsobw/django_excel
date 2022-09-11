@@ -1,20 +1,19 @@
-from django.http import HttpResponse
-from django.shortcuts import render
-from datetime import *
-import os, openpyxl, pathlib
+import pandas as pd
+from django.shortcuts import render, redirect
+from control.forms import Weighing, read_file
 
 
-def read_file():
-    workbook = openpyxl.load_workbook('etual.xlsx')
-    list = workbook['Производство']
-    data = []
-    for row in list.rows:
-        for cell in row:
-            data.append(cell.value)
-    print(data)
-    return(data)
+def weighing(request):
+    if request.method == "POST":
+        form = Weighing(request.POST, request.FILES)
+        if form.is_valid():
+            info_base = form.cleaned_data
+            return redirect(f"/weighing/{info_base.get('p_choice_room')}")
+    else:
+        form = Weighing()
+        return render(request, "control/weighing.html", {"form": form})
 
 
 def home(request):
-    data = read_file()
-    return HttpResponse('<h6>'+str(data)+'</h6>')
+    data = read_file('all')
+    return render(request, "control/home.html", {"data": data})

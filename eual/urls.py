@@ -19,4 +19,5 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('control.url')),
+    path('weighing/', include('control.url')),
 ]
