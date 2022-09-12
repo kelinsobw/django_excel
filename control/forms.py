@@ -17,6 +17,11 @@ def read_file(setting):
         data = []
         for el in range(9, len(head)):
             data.append(head[el])
+    if setting == 'data':
+        temp = []
+        for el in range(len(data)):
+            temp.append(data[el])
+        data = temp
     return(data)
 
 
@@ -26,3 +31,5 @@ class Weighing(forms.Form):
     for el in range(len(head)):
         choice_room.append((str(transliterate.translit(((head[el]).replace(" ", "")), reversed=True)), str(head[el])))
     p_choice_room = forms.ChoiceField(choices=choice_room, label='')
+
+

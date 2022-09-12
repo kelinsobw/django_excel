@@ -20,4 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('control.url')),
     path('weighing/', include('control.url')),
+    path('weighing/<str:cabinet>', include('control.url')),
 ]

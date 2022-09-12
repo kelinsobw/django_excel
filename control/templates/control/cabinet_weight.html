@@ -6,6 +6,12 @@
         {% csrf_token %}
         {{ form|crispy }}
         <button type="submit" class="save btn btn-primary">Отобразить</button>
+        {{form.cosmetic_in_cab}}
+
+        <script>
+
+
+        </script>
 </form>
 
 {% endblock %}
