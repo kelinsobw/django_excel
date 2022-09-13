@@ -2,16 +2,28 @@
 {% load crispy_forms_filters %}
 {% block title %}Взвешивание{% endblock %}
 {% block content %}
-<form method="POST" class="post-form">
+<form method="POST">
         {% csrf_token %}
         {{ form|crispy }}
         <button type="submit" class="save btn btn-primary">Отобразить</button>
-        {{form.cosmetic_in_cab}}
+                <br>
+        <br>
 
-        <script>
+        {% for row in form.cosmetic_in_cab %}
+<tr>
+        {% for element in row %}
+{% if forloop.counter0 < 3 %}
+    <td>{{element}} </td>
+{% else %}
+    <td>{{element}} </td>
+    <input type="text", value="{{element}}", name="_formi">
+    {% endif %}
+            {% endfor %}
 
-
-        </script>
+        <br>
+    </tr>
+        {% endfor %}
+     <p><input type="submit" value="Отправить" ></p>
 </form>
 
 {% endblock %}
