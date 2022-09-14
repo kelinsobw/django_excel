@@ -21,4 +21,6 @@ urlpatterns = [
     path('', include('control.url')),
     path('weighing/', include('control.url')),
     path('weighing/<str:cabinet>', include('control.url')),
+    path('save_res/', include('control.url')),
+
 ]
