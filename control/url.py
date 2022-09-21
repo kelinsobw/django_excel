@@ -7,8 +7,8 @@ urlpatterns = [
     path("", home, name="home"),
     path("weighing/", weighing, name="weighing"),
     path("weighing/<str:cabinet>", cabinet_weight, name="cabinet_weight"),
-    path("save_res/", save_res, name="save_res"),
-
-
+    path("weighing/<str:slug>/save_res/", save_res, name="save_res"),
+    path("weighing/save_res/<str:slug>", save_res, name="save_res"),
+    path('weighing/<str:cabinet>/<str:master>', cabinet_weight, name="cabinet_weight"),
 
 ]

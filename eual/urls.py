@@ -20,7 +20,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('control.url')),
     path('weighing/', include('control.url')),
-    path('weighing/<str:cabinet>', include('control.url')),
-    path('save_res/', include('control.url')),
+    path('weighing/<str:cabinet>/<str:master>', include('control.url')),
+    path('weighing/<str:slug>/save_res/', include('control.url')),
+    path("weighing/save_res/", include('control.url')),
 
 ]

@@ -2,7 +2,7 @@
 {% load crispy_forms_filters %}
 {% block title %}Взвешивание{% endblock %}
 {% block content %}
-<form action="save_res/", method="POST" xmlns="http://www.w3.org/1999/html">
+<form method="POST" xmlns="http://www.w3.org/1999/html">
     {% csrf_token %}
     {{ form|crispy }}
     <br>
@@ -16,7 +16,7 @@
         <td>{{element}}</td>
         {% else %}
         <td>{{element}}</td>
-        <td><input type="text", value="1" , name={{element}}></td>
+        <td><input type="text", value="" , name={{element}}></td>
         {% endif %}
         {% endfor %}
 
