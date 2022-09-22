@@ -4,26 +4,24 @@
 {% block content %}
 <form method="POST" xmlns="http://www.w3.org/1999/html">
     {% csrf_token %}
+    <br>
+    <br>
     {{ form|crispy }}
-    <br>
-    <br>
     {% for element in form.mass %}
     {% endfor %}
     {% for row in form.cosmetic_in_cab %}
+    <table border="1" width="100%" cellpadding="5">
     <tr>
         {% for element in row %}
-        {% if forloop.counter0 < 3 %}
-        <td>{{element}}</td>
-        {% else %}
-        <td>{{element}}</td>
-        <td><input type="text", value="" , name={{element}}></td>
+        {% if forloop.counter0 < 4 %}
+        <td >{{element}}</td>
+         {% else %}
+        <td><input type="text", value="", name={{element}}></td>
         {% endif %}
         {% endfor %}
-
-        <br>
     </tr>
+    </table>
     {% endfor %}
     <p><input type="submit" aria-label="Отправить" ></p>
 </form>
-
 {% endblock %}

@@ -1,8 +1,13 @@
+import datetime
 import openpyxl
+import pathlib
 import transliterate
 from django import forms
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from openpyxl.styles import Font
+import os
+
 from control.forms import Weighing, read_file
 
 
@@ -11,8 +16,8 @@ def save_res(request, cabinet, master):
 
 
 def start_otchet(name, master, my_data):
-    '''workbook_temp = openpyxl.load_workbook('shablon.xlsx')
-    data = workbook_temp["Шаблон"]'''
+    workbook_temp = openpyxl.load_workbook('shablon.xlsx')
+    data = workbook_temp["Шаблон"]
     my_data = list(my_data.items())
     row = 7
     itog = 0
@@ -20,22 +25,61 @@ def start_otchet(name, master, my_data):
     itog_brand = 0
     m = read_file('masters')
     n = read_file('head')
+    print(n)
     for i in (0, len(m)-1):
         if transliterate.translit(m[i].lower().replace(" ", ""), reversed=True) == master:
             master = m[i]
     for i in (0, len(n)-1):
         if transliterate.translit(n[i].lower().replace(" ", ""), reversed=True) == name:
             name = n[i]
-    '''    data['B4'] = master
-    data['B2'] = name'''
+    data['B4'] = master
+    data['B2'] = name
+    old_info = None
     old_info, non = build_vir_cab(name, 1)
     del my_data[0]
-    for i in range(0, len(old_info)-1):
-        print(my_data[i][1])
+    temp = []
+    for i in range(0, len(my_data)-1):
+        temp.append(str(my_data[i][1]))
         if str(my_data[i][1]) != '':
-            print("+++")
             otchet.append([old_info[i][0], old_info[i][1], float(old_info[i][3])-float(my_data[i][1]), float(old_info[i][4])*(float(old_info[i][3])-float(my_data[i][1]))])
+    #otchet.sort(key=lambda x:x[0], reverse=False)
     print(otchet)
+    x = len(otchet)
+    for i in range(0, x):
+        if i != 0 and otchet[i][0] != otchet[i - 1][0]:
+            data["E" + str(row)] = itog_brand
+            data["E" + str(row)].font = Font(bold=True, size=14)
+            data["D" + str(row)] = "Итого"
+            data["D" + str(row)].font = Font(bold=True, size=14)
+            itog_brand = 0
+            row = row + 2
+        data["B" + str(row)] = otchet[i][0]
+        data["C" + str(row)] = otchet[i][1]
+        data["D" + str(row)] = otchet[i][2]
+        data["E" + str(row)] = otchet[i][3]
+        itog = float(data["E" + str(row)].value + itog)
+        itog_brand = itog_brand + otchet[i][3]
+        row = row + 1
+
+    data["E" + str(row)] = itog_brand
+    data["E" + str(row)].font = Font(bold=True, size=14)
+    data["D" + str(row)] = "Итого"
+    data["D" + str(row)].font = Font(bold=True, size=14)
+    itog_brand = 0
+
+    data["E" + str(row + 1)] = itog
+    data["E" + str(row + 1)].font = Font(bold=True, size=14)
+    data["D" + str(row + 1)] = "Итого расход"
+    data["D" + str(row + 1)].font = Font(bold=True, size=14)
+    dir_path = pathlib.Path.cwd()
+    data["B3"] = str(datetime.date.today() - datetime.timedelta(days=1))
+    try:
+        os.makedirs('history' + "\\" + str(datetime.date.today()) + '')
+    except:
+        pass
+    workbook_temp.save(
+        pathlib.Path(dir_path, 'history' + "\\" + str(datetime.date.today()) + '', '' + name + '.xlsx'))
+
 
 def write_in_excel(name, master, my_data):
     start_otchet(name,master,my_data)
@@ -93,6 +137,9 @@ def build_vir_cab(cabinet, setting=0): #setting == 0=>don't price, 1>price
 def cabinet_weight(request, cabinet, master):
     class Cabinet_weight(forms.Form):
         cosmetic_in_cab, choice_room = build_vir_cab(cabinet)
+        for i in range(len(cosmetic_in_cab)):
+            cosmetic_in_cab[i]=list(cosmetic_in_cab[i])
+            cosmetic_in_cab[i].append(str(i))
         x = str(request.build_absolute_uri())
         x = x[x.rindex("/") + 1:]
 

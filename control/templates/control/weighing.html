@@ -4,6 +4,8 @@
 {% block content %}
 <form method="POST" class="post-form">
         {% csrf_token %}
+            <br>
+    <br>
         {{ form|crispy }}
         <button type="submit" class="save btn btn-primary">Отобразить</button>
 </form>
