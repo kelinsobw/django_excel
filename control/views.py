@@ -7,8 +7,28 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from openpyxl.styles import Font
 import os
-
 from control.forms import Weighing, read_file
+
+
+def build_vir_cab(cabinet, setting=0): #setting == 0=>don't price, 1>price
+    data_now = read_file('all')
+    head = read_file('head')
+    cabinet_num = 0
+    for i in range(5, len(data_now[0])):
+        if (transliterate.translit(((data_now[0][i]).lower().replace(" ", "")), reversed=True)) == cabinet:
+            cabinet_num = i
+    cosmetic_in_cab = []
+    for i in range(1, len(data_now)):
+        if str(data_now[i][cabinet_num]) != "nan":
+            if str(setting) == "1":
+                cosmetic_in_cab.append((data_now[i][2], data_now[i][3], data_now[i][4], data_now[i][cabinet_num], data_now[i][6]/data_now[i][4]))
+            else:
+                cosmetic_in_cab.append((data_now[i][2], data_now[i][3], data_now[i][4], data_now[i][cabinet_num]))
+    choice_room = []
+    for el in range(len(head)):
+        choice_room.append(
+            (str(transliterate.translit(((head[el]).replace(" ", "")), reversed=True)), str(head[el])))
+    return(cosmetic_in_cab, choice_room)
 
 
 def save_res(request, cabinet, master):
@@ -18,7 +38,6 @@ def save_res(request, cabinet, master):
 def start_otchet(name, master, my_data):
     workbook_temp = openpyxl.load_workbook('shablon.xlsx')
     data = workbook_temp["Шаблон"]
-    my_data = list(my_data.items())
     row = 7
     itog = 0
     otchet = []
@@ -26,24 +45,24 @@ def start_otchet(name, master, my_data):
     m = read_file('masters')
     n = read_file('head')
     print(n)
-    for i in (0, len(m)-1):
+    for i in range(0, len(m)-1):
         if transliterate.translit(m[i].lower().replace(" ", ""), reversed=True) == master:
             master = m[i]
-    for i in (0, len(n)-1):
+    for i in range(0, len(n)-1):
         if transliterate.translit(n[i].lower().replace(" ", ""), reversed=True) == name:
             name = n[i]
     data['B4'] = master
     data['B2'] = name
-    old_info = None
+    try:
+        name = transliterate.translit(name.lower().replace(" ", ""), reversed=True)
+    except:
+        pass
     old_info, non = build_vir_cab(name, 1)
-    del my_data[0]
     temp = []
     for i in range(0, len(my_data)-1):
         temp.append(str(my_data[i][1]))
         if str(my_data[i][1]) != '':
             otchet.append([old_info[i][0], old_info[i][1], float(old_info[i][3])-float(my_data[i][1]), float(old_info[i][4])*(float(old_info[i][3])-float(my_data[i][1]))])
-    #otchet.sort(key=lambda x:x[0], reverse=False)
-    print(otchet)
     x = len(otchet)
     for i in range(0, x):
         if i != 0 and otchet[i][0] != otchet[i - 1][0]:
@@ -82,21 +101,12 @@ def start_otchet(name, master, my_data):
 
 
 def write_in_excel(name, master, my_data):
-    start_otchet(name,master,my_data)
-    '''cosmetic_in_cab, choice_room = build_vir_cab(name)
     my_data = list(my_data.items())
     del my_data[0]
-    write_otchet = []
-    for i in range(len(cosmetic_in_cab)):
-        print(cosmetic_in_cab[i][3])
     for i in range(len(my_data)):
-        print(my_data[i][1])
-    for i in range(len(cosmetic_in_cab)):
-        if str(my_data[i][1]) != '':
-            write_otchet.append((cosmetic_in_cab[i][0],
-                                 cosmetic_in_cab[i][1],
-                                 (float(cosmetic_in_cab[i][3])-float(my_data[i][1]))))
-
+        my_data[i]=(my_data[0], my_data[i][1].replace(",", "."))
+    start_otchet(name,master,my_data)
+    cosmetic_in_cab, choice_room = build_vir_cab(name)
     workbook_temp = openpyxl.load_workbook('etual.xlsx')
     data = workbook_temp["Производство"]
     simvols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']
@@ -108,30 +118,9 @@ def write_in_excel(name, master, my_data):
     for j in range(0, len(cosmetic_in_cab)):
         for i in range(1, 1000):
             if cosmetic_in_cab[j][1] == data['D'+str(i)].value:
-                if str(my_data[j][1]) != '0':
+                if str(my_data[j][1]) != '':
                     data[coord + str(i)] = (my_data[j][1])
-    workbook_temp.save('etual.xlsx')'''
-
-
-def build_vir_cab(cabinet, setting=0): #setting == 0=>don't price, 1>price
-    data_now = read_file('all')
-    head = read_file('head')
-    cabinet_num = 0
-    for i in range(5, len(data_now[0])):
-        if (transliterate.translit(((data_now[0][i]).lower().replace(" ", "")), reversed=True)) == cabinet:
-            cabinet_num = i
-    cosmetic_in_cab = []
-    for i in range(1, len(data_now)):
-        if str(data_now[i][cabinet_num]) != "nan":
-            if str(setting) == "1":
-                cosmetic_in_cab.append((data_now[i][2], data_now[i][3], data_now[i][4], data_now[i][cabinet_num], data_now[i][6]/data_now[i][4]))
-            else:
-                cosmetic_in_cab.append((data_now[i][2], data_now[i][3], data_now[i][4], data_now[i][cabinet_num]))
-    choice_room = []
-    for el in range(len(head)):
-        choice_room.append(
-            (str(transliterate.translit(((head[el]).replace(" ", "")), reversed=True)), str(head[el])))
-    return(cosmetic_in_cab, choice_room)
+    workbook_temp.save('etual.xlsx')
 
 
 def cabinet_weight(request, cabinet, master):
@@ -152,6 +141,7 @@ def cabinet_weight(request, cabinet, master):
         form = Cabinet_weight(request.POST, request.FILES)
         if form.is_valid():
             data = request.POST
+            print(data)
             write_in_excel(name, master, data)
             return redirect(f"/weighing/{str(name)}/save_res", {"form": form})
     else:

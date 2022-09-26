@@ -2,26 +2,44 @@
 {% load crispy_forms_filters %}
 {% block title %}Взвешивание{% endblock %}
 {% block content %}
+<style>
+table, td {
+  border:1px solid black;}
+</style>
+
 <form method="POST" xmlns="http://www.w3.org/1999/html">
     {% csrf_token %}
     <br>
     <br>
+
     {{ form|crispy }}
-    {% for element in form.mass %}
-    {% endfor %}
-    {% for row in form.cosmetic_in_cab %}
-    <table border="1" width="100%" cellpadding="5">
+        <table style="width:100%">
+
+              <thead>
     <tr>
-        {% for element in row %}
-        {% if forloop.counter0 < 4 %}
-        <td >{{element}}</td>
-         {% else %}
-        <td><input type="text", value="", name={{element}}></td>
-        {% endif %}
-        {% endfor %}
+      <th>Производитель</th>
+      <th>Наименование</th>
+      <th>Обьем</th>
+      <th>Остаток</th>
+        <th>Текущее значение</th>
+
+
     </tr>
-    </table>
+  </thead>
+
+    {% for row in form.cosmetic_in_cab %}
+
+    <tr>
+        <td>{{row.0}}</td>
+        <td width="80%">{{row.1}}</td>
+        <td>{{row.2}}</td>
+        <td>{{row.3}}</td>
+
+        <td><input size="10" type="text", value="", name={{row.4}}></td>
+
     {% endfor %}
+           </tr>
+    </table>
     <p><input type="submit" aria-label="Отправить" ></p>
 </form>
 {% endblock %}

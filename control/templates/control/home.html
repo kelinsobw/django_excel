@@ -5,18 +5,26 @@ table, th, td {
 </style>
 {% extends "control/base.html" %}
 {% block title %}Note views{% endblock %}
+            <br>
+    <br>
 {% block content %}
+            <br>
+    <br>
+<style>
+table, th, td {
+  border:1px solid black;}
+</style>
+
 <div class="databases">
     <div class="row">
-<table>
-<colgroup>
-    <col span="2" style="background:Khaki"><!-- С помощью этой конструкции задаем цвет фона для первых двух столбцов таблицы-->
-    <col style="background-color:LightCyan"><!-- Задаем цвет фона для следующего (одного) столбца таблицы-->
-  </colgroup>
+
+<table style="width:100%">
+            <br>
+    <br>
 {% for database in data %}
 <tr>
         {% for element in database %}
-    <td>{{element}}</td>
+    <th>{{element}}</th>
             {% endfor %}
     </tr>
         {% endfor %}
