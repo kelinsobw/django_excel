@@ -3,11 +3,15 @@ import openpyxl
 import pathlib
 import transliterate
 from django import forms
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from openpyxl.styles import Font
 import os
 from control.forms import Weighing, read_file
+from django.http import HttpResponse
+
+
+def error_weidth():
+    return HttpResponse("jkhgfds")
 
 
 def build_vir_cab(cabinet, setting=0): #setting == 0=>don't price, 1>price
@@ -29,10 +33,6 @@ def build_vir_cab(cabinet, setting=0): #setting == 0=>don't price, 1>price
         choice_room.append(
             (str(transliterate.translit(((head[el]).replace(" ", "")), reversed=True)), str(head[el])))
     return(cosmetic_in_cab, choice_room)
-
-
-def save_res(request, cabinet, master):
-    return HttpResponse("Ju")
 
 
 def start_otchet(name, master, my_data):
@@ -62,7 +62,12 @@ def start_otchet(name, master, my_data):
     for i in range(0, len(my_data)-1):
         temp.append(str(my_data[i][1]))
         if str(my_data[i][1]) != '':
-            otchet.append([old_info[i][0], old_info[i][1], float(old_info[i][3])-float(my_data[i][1]), float(old_info[i][4])*(float(old_info[i][3])-float(my_data[i][1]))])
+            if float(old_info[i][3])-float(my_data[i][1])>=0:
+                otchet.append([old_info[i][0], old_info[i][1], float(old_info[i][3])-float(my_data[i][1]), float(old_info[i][4])*(float(old_info[i][3])-float(my_data[i][1]))])
+            else:
+                error_weidth()
+
+
     x = len(otchet)
     for i in range(0, x):
         if i != 0 and otchet[i][0] != otchet[i - 1][0]:
@@ -143,7 +148,7 @@ def cabinet_weight(request, cabinet, master):
             data = request.POST
             print(data)
             write_in_excel(name, master, data)
-            return redirect(f"/weighing/{str(name)}/save_res", {"form": form})
+            return redirect(f"/", {"form": form})
     else:
         form = Cabinet_weight()
         return render(request, "control/cabinet_weight.html", {"form": form})

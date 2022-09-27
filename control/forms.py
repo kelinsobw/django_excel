@@ -3,7 +3,6 @@ from django import forms
 import transliterate
 
 
-
 def read_file(setting):
     data = pd.read_excel('etual.xlsx', sheet_name='Производство')
     head = data.columns.ravel()
