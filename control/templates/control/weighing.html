@@ -6,6 +6,7 @@
         {% csrf_token %}
             <br>
     <br>
+    {% load materializecss %}
         {{ form|crispy }}
         <button type="submit" class="save btn btn-primary">Отобразить</button>
 </form>

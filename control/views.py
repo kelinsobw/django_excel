@@ -1,13 +1,14 @@
+from control.forms import Weighing, read_file, transliterate_def
 import datetime
 import openpyxl
 import pathlib
-import transliterate
 from django import forms
 from django.shortcuts import render, redirect
 from openpyxl.styles import Font
 import os
-from control.forms import Weighing, read_file
 from django.http import HttpResponse
+
+
 
 
 def error_weidth():
@@ -19,7 +20,7 @@ def build_vir_cab(cabinet, setting=0): #setting == 0=>don't price, 1>price
     head = read_file('head')
     cabinet_num = 0
     for i in range(5, len(data_now[0])):
-        if (transliterate.translit(((data_now[0][i]).lower().replace(" ", "")), reversed=True)) == cabinet:
+        if transliterate_def(data_now[0][i]) == cabinet:
             cabinet_num = i
     cosmetic_in_cab = []
     for i in range(1, len(data_now)):
@@ -30,8 +31,7 @@ def build_vir_cab(cabinet, setting=0): #setting == 0=>don't price, 1>price
                 cosmetic_in_cab.append((data_now[i][2], data_now[i][3], data_now[i][4], data_now[i][cabinet_num]))
     choice_room = []
     for el in range(len(head)):
-        choice_room.append(
-            (str(transliterate.translit(((head[el]).replace(" ", "")), reversed=True)), str(head[el])))
+        choice_room.append((str(transliterate_def(head[el])), str(head[el])))
     return(cosmetic_in_cab, choice_room)
 
 
@@ -46,15 +46,15 @@ def start_otchet(name, master, my_data):
     n = read_file('head')
     print(n)
     for i in range(0, len(m)-1):
-        if transliterate.translit(m[i].lower().replace(" ", ""), reversed=True) == master:
+        if transliterate_def(m[i]) == master:
             master = m[i]
     for i in range(0, len(n)-1):
-        if transliterate.translit(n[i].lower().replace(" ", ""), reversed=True) == name:
+        if transliterate_def(n[i]) == name:
             name = n[i]
     data['B4'] = master
     data['B2'] = name
     try:
-        name = transliterate.translit(name.lower().replace(" ", ""), reversed=True)
+        name = transliterate_def(name)
     except:
         pass
     old_info, non = build_vir_cab(name, 1)
@@ -67,7 +67,7 @@ def start_otchet(name, master, my_data):
             else:
                 error_weidth()
 
-
+    print(otchet)
     x = len(otchet)
     for i in range(0, x):
         if i != 0 and otchet[i][0] != otchet[i - 1][0]:
@@ -117,7 +117,7 @@ def write_in_excel(name, master, my_data):
     simvols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']
     coord = None
     for i in range(4, 1000):
-        if transliterate.translit(data[str(simvols[i]) + '1'].value.lower().replace(" ", ""), reversed=True) == name:
+        if transliterate_def(data[str(simvols[i]) + '1'].value) == name:
             coord = simvols[i]
             break
     for j in range(0, len(cosmetic_in_cab)):
@@ -129,8 +129,11 @@ def write_in_excel(name, master, my_data):
 
 
 def cabinet_weight(request, cabinet, master):
+    print(cabinet)
     class Cabinet_weight(forms.Form):
         cosmetic_in_cab, choice_room = build_vir_cab(cabinet)
+        print(cosmetic_in_cab)
+        print("++++++++++")
         for i in range(len(cosmetic_in_cab)):
             cosmetic_in_cab[i]=list(cosmetic_in_cab[i])
             cosmetic_in_cab[i].append(str(i))
