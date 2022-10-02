@@ -23,5 +23,5 @@ urlpatterns = [
     path('weighing/<str:cabinet>/<str:master>', include('control.url')),
     path("error_weidth/", include('control.url')),
     path('plus/', include('control.url')),
-    path('plus/<str:cabinet>', include('control.url')),
+    path('plus/<str:p_choice_room>', include('control.url')),
 ]

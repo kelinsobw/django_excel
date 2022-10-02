@@ -1,4 +1,4 @@
-from control.forms import Weighing, read_file, transliterate_def, Plus
+from control.forms import Weighing, read_file, transliterate_def, Plus, Plus_cab
 import datetime
 import openpyxl
 import pathlib
@@ -14,8 +14,8 @@ def plus(request):
         form = Plus(request.POST, request.FILES)
         if form.is_valid():
             info_base = form.cleaned_data
-            return redirect(
-                f"/plus/{info_base.get('p_choice_room').lower()}/")
+            print(info_base)
+            return redirect(f"/plus/{info_base.get('p_choice_room').lower()}")
     else:
         form = Plus()
         return render(request, "control/weighing.html", {"form": form})
@@ -100,7 +100,6 @@ def start_otchet(name, master, my_data):
     data["D" + str(row)] = "Итого"
     data["D" + str(row)].font = Font(bold=True, size=14)
     itog_brand = 0
-
     data["E" + str(row + 1)] = itog
     data["E" + str(row + 1)].font = Font(bold=True, size=14)
     data["D" + str(row + 1)] = "Итого расход"
@@ -138,15 +137,21 @@ def write_in_excel(name, master, my_data):
     workbook_temp.save('etual.xlsx')
 
 
-def cab_plus(request, cabinet, master):
-    pass
+def cab_plus(request, p_choice_room):
+    if request.method == "POST":
+        form = Plus_cab(request.POST, request.FILES)
+        if form.is_valid():
+            info_base = form.cleaned_data
+            return redirect(
+                f"/plus/{info_base.get('cabinet').lower()}")
+    else:
+        form = Plus_cab()
+        return render(request, "control/weighing.html", {"form": form})
+
 
 def cabinet_weight(request, cabinet, master):
-    print(cabinet)
     class Cabinet_weight(forms.Form):
         cosmetic_in_cab, choice_room = build_vir_cab(cabinet)
-        print(cosmetic_in_cab)
-        print("++++++++++")
         for i in range(len(cosmetic_in_cab)):
             cosmetic_in_cab[i]=list(cosmetic_in_cab[i])
             cosmetic_in_cab[i].append(str(i))
@@ -162,7 +167,6 @@ def cabinet_weight(request, cabinet, master):
         form = Cabinet_weight(request.POST, request.FILES)
         if form.is_valid():
             data = request.POST
-            print(data)
             write_in_excel(name, master, data)
             return redirect(f"/", {"form": form})
     else:

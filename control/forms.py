@@ -39,8 +39,7 @@ def read_file(setting):
     if setting == 'brands':
         temp = []
         for el in range(1, len(data)):
-            data
-            temp.append(data[el][1], data[el][2])
+            temp.append((data[el][2], data[el][3]))
         data = temp
     return(data)
 
@@ -55,7 +54,16 @@ class Plus(forms.Form):
 
 class Plus_cab(forms.Form):
     brands = read_file("brands")
-    
+    print("brands = " + str(brands))
+    brands_ch = []
+    for el in range(len(brands)):
+        brands_ch.append((str(transliterate_def(brands[el][0])), str(brands[el][0])))
+    brands_ch = list(set(brands_ch))
+    brands_views = forms.ChoiceField(choices=brands_ch, label='')
+    cosmetic_ch = []
+    for el in range(len(brands)):
+        cosmetic_ch.append((str(el), str(brands[el][1])))
+    cosmetic_views = forms.ChoiceField(choices=cosmetic_ch, label='')
 
 
 class Weighing(forms.Form):
