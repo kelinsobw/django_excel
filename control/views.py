@@ -1,4 +1,4 @@
-from control.forms import Weighing, read_file, transliterate_def
+from control.forms import Weighing, read_file, transliterate_def, Plus
 import datetime
 import openpyxl
 import pathlib
@@ -9,6 +9,16 @@ import os
 from django.http import HttpResponse
 
 
+def plus(request):
+    if request.method == "POST":
+        form = Plus(request.POST, request.FILES)
+        if form.is_valid():
+            info_base = form.cleaned_data
+            return redirect(
+                f"/plus/{info_base.get('p_choice_room').lower()}/")
+    else:
+        form = Plus()
+        return render(request, "control/weighing.html", {"form": form})
 
 
 def error_weidth():
@@ -127,6 +137,9 @@ def write_in_excel(name, master, my_data):
                     data[coord + str(i)] = (my_data[j][1])
     workbook_temp.save('etual.xlsx')
 
+
+def cab_plus(request, cabinet, master):
+    pass
 
 def cabinet_weight(request, cabinet, master):
     print(cabinet)
