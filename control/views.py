@@ -1,4 +1,6 @@
-from control.forms import Weighing, read_file, transliterate_def, Plus, Plus_cab
+import self
+
+from control.forms import Weighing, read_file, transliterate_def, Plus
 import datetime
 import openpyxl
 import pathlib
@@ -15,7 +17,7 @@ def plus(request):
         if form.is_valid():
             info_base = form.cleaned_data
             print(info_base)
-            return redirect(f"/plus/{info_base.get('p_choice_room').lower()}")
+            return redirect(f"/plus/{info_base.get('p_choice_room').lower()}/'1'")
     else:
         form = Plus()
         return render(request, "control/weighing.html", {"form": form})
@@ -137,16 +139,48 @@ def write_in_excel(name, master, my_data):
     workbook_temp.save('etual.xlsx')
 
 
-def cab_plus(request, p_choice_room):
+def cab_plus(request, p_choice_room, brands_views):
+    class Plus_cab(forms.Form):
+        brands = read_file("brands")
+        brands_ch = []
+        x = str(request.build_absolute_uri())
+        x = str(x[x.rindex("/") + 1:])
+        name_brands = None
+        print(len(x))
+        if len(x) == 3:
+            name_brands = brands[0][0]
+
+        for el in range(len(brands)):
+            brands_ch.append((str(transliterate_def(brands[el][0])), str(brands[el][0])))
+            if x==str(transliterate_def(brands[el][0])):
+                name_brands = str(transliterate_def(brands[el][0]))
+        brands_ch = list(set(brands_ch))
+        brands_ch.sort()
+        brands_views = forms.ModelChoiceField(choices=brands_ch, label=u"Country", widget=ModelSelect2Widget(
+            model=Brands_views,
+            search_fields=['name__icontains'],
+        )
+        cosmetic_ch = []
+
+        for el in range(len(brands)):
+            if name_brands == brands[el][0]:
+                cosmetic_ch.append((str(el), str(brands[el][1])))
+        cosmetic_views = forms.ChoiceField(choices=cosmetic_ch, label='')
+
+
+
+
     if request.method == "POST":
         form = Plus_cab(request.POST, request.FILES)
         if form.is_valid():
             info_base = form.cleaned_data
             return redirect(
-                f"/plus/{info_base.get('cabinet').lower()}")
+                f"/plus/{info_base.get('cabinet').lower()}/{info_base.get('brands_views').lower()}")
     else:
         form = Plus_cab()
         return render(request, "control/weighing.html", {"form": form})
+
+
 
 
 def cabinet_weight(request, cabinet, master):

@@ -10,5 +10,5 @@ urlpatterns = [
     path("weighing/<str:cabinet>", cabinet_weight, name="cabinet_weight"),
     path('weighing/<str:cabinet>/<str:master>', cabinet_weight, name="cabinet_weight"),
     path("plus/", plus, name="plus"),
-    path("plus/<str:p_choice_room>", cab_plus, name="cab_plus"),
+    path("plus/<str:p_choice_room>/<str:brands_views>", cab_plus, name="cab_plus"),
 ]
