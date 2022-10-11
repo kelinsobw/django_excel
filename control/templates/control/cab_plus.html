@@ -1,0 +1,31 @@
+{% extends "control/base.html" %}
+{% load crispy_forms_filters %}
+{% block title %}Взвешивание{% endblock %}
+{% block content %}
+<style>
+table, td {
+  border:1px solid black;}
+</style>
+
+<form method="POST" xmlns="http://www.w3.org/1999/html">
+    {% csrf_token %}
+    <br>
+    <br>
+
+    {{ form|crispy }}
+        <table style="width:100%">
+
+    {% for row in form.cosm %}
+
+    <tr>
+        <td>{{row.0}}</td>
+        <td>{{row.1}}</td>
+
+        <td><input size="10" type="text", value="", name={{row.4}}></td>
+
+    {% endfor %}
+           </tr>
+    </table>
+    <p><input type="submit" aria-label="Отправить"  ></p>
+</form>
+{% endblock %}

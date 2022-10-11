@@ -1,5 +1,3 @@
-import self
-
 from control.forms import Weighing, read_file, transliterate_def, Plus
 import datetime
 import openpyxl
@@ -144,9 +142,16 @@ def cab_plus(request, p_choice_room, brands_views):
         brands = read_file("brands")
         brands_ch = []
         x = str(request.build_absolute_uri())
-        x = str(x[x.rindex("/") + 1:])
+        r = x.replace('/', ' ')
+        r = r.split()
+        x = r[-1]
+        c = r[-2]
+        cosm = []
+        cosmetic_in_cab, choice_room = build_vir_cab(c)
+        for i in range(len(cosmetic_in_cab)):
+            if transliterate_def(cosmetic_in_cab[i][0])==x:
+                cosm.append((cosmetic_in_cab[i][1], cosmetic_in_cab[i][2]))
         name_brands = None
-        print(len(x))
         if len(x) == 3:
             name_brands = brands[0][0]
 
@@ -156,31 +161,23 @@ def cab_plus(request, p_choice_room, brands_views):
                 name_brands = str(transliterate_def(brands[el][0]))
         brands_ch = list(set(brands_ch))
         brands_ch.sort()
-        brands_views = forms.ModelChoiceField(choices=brands_ch, label=u"Country", widget=ModelSelect2Widget(
-            model=Brands_views,
-            search_fields=['name__icontains'],
-        )
-        cosmetic_ch = []
-
-        for el in range(len(brands)):
-            if name_brands == brands[el][0]:
-                cosmetic_ch.append((str(el), str(brands[el][1])))
-        cosmetic_views = forms.ChoiceField(choices=cosmetic_ch, label='')
-
-
-
+        brands_ch_f = forms.ChoiceField(choices=brands_ch, label='')
 
     if request.method == "POST":
         form = Plus_cab(request.POST, request.FILES)
         if form.is_valid():
+            x = str(request.build_absolute_uri())
+            r = x.replace('/', ' ')
+            r = r.split()
+            x = r[-1]
+            c = r[-2]
             info_base = form.cleaned_data
+            print(c)
             return redirect(
-                f"/plus/{info_base.get('cabinet').lower()}/{info_base.get('brands_views').lower()}")
+                f"/plus/{c}/{info_base.get('brands_ch_f').lower()}")
     else:
         form = Plus_cab()
-        return render(request, "control/weighing.html", {"form": form})
-
-
+        return render(request, "control/cab_plus.html", {"form": form})
 
 
 def cabinet_weight(request, cabinet, master):

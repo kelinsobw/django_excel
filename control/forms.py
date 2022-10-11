@@ -1,6 +1,5 @@
 import pandas as pd
 import pytils
-import self as self
 from django import forms
 from django.http import request
 
