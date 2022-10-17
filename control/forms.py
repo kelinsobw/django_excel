@@ -39,19 +39,10 @@ def read_file(setting):
         data = temp
     if setting == 'brands':
         temp = []
-        for el in range(1, len(data)):
+        for el in range(0, len(data)):
             temp.append((data[el][2], data[el][3]))
         data = temp
     return(data)
-
-
-class Plus(forms.Form):
-    head = read_file('head')
-    choice_room = []
-    for el in range(len(head)):
-        choice_room.append((str(transliterate_def(head[el])), str(head[el])))
-    p_choice_room = forms.ChoiceField(choices=choice_room, label='')
-
 
 
 

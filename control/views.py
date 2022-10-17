@@ -1,4 +1,4 @@
-from control.forms import Weighing, read_file, transliterate_def, Plus
+from control.forms import Weighing, read_file, transliterate_def
 import datetime
 import openpyxl
 import pathlib
@@ -10,12 +10,19 @@ from django.http import HttpResponse
 
 
 def plus(request):
+    class Plus(forms.Form):
+        head = read_file('head')
+        choice_room = []
+        for el in range(len(head)):
+            choice_room.append((str(transliterate_def(head[el])), str(head[el])))
+        p_choice_room = forms.ChoiceField(choices=choice_room, label='', initial=None)
+    cosmetic_in_cab, choice_room = build_vir_cab("Наименование")
+
     if request.method == "POST":
         form = Plus(request.POST, request.FILES)
         if form.is_valid():
             info_base = form.cleaned_data
-            print(info_base)
-            return redirect(f"/plus/{info_base.get('p_choice_room').lower()}/'1'")
+            return redirect(f"/plus/{info_base.get('p_choice_room').lower()}/{str(transliterate_def(cosmetic_in_cab[0][0]))}")
     else:
         form = Plus()
         return render(request, "control/weighing.html", {"form": form})
@@ -29,6 +36,14 @@ def build_vir_cab(cabinet, setting=0): #setting == 0=>don't price, 1>price
     data_now = read_file('all')
     head = read_file('head')
     cabinet_num = 0
+
+    if cabinet == "Наименование":
+        cosmetic_in_cab = []
+        for i in range(1, len(data_now)):
+            cosmetic_in_cab.append((data_now[i][2],data_now[i][3], data_now[i][4]))
+        choice_room = []
+        return (cosmetic_in_cab, choice_room)
+
     for i in range(5, len(data_now[0])):
         if transliterate_def(data_now[0][i]) == cabinet:
             cabinet_num = i
@@ -54,7 +69,6 @@ def start_otchet(name, master, my_data):
     itog_brand = 0
     m = read_file('masters')
     n = read_file('head')
-    print(n)
     for i in range(0, len(m)-1):
         if transliterate_def(m[i]) == master:
             master = m[i]
@@ -77,7 +91,6 @@ def start_otchet(name, master, my_data):
             else:
                 error_weidth()
 
-    print(otchet)
     x = len(otchet)
     for i in range(0, x):
         if i != 0 and otchet[i][0] != otchet[i - 1][0]:
@@ -99,7 +112,6 @@ def start_otchet(name, master, my_data):
     data["E" + str(row)].font = Font(bold=True, size=14)
     data["D" + str(row)] = "Итого"
     data["D" + str(row)].font = Font(bold=True, size=14)
-    itog_brand = 0
     data["E" + str(row + 1)] = itog
     data["E" + str(row + 1)].font = Font(bold=True, size=14)
     data["D" + str(row + 1)] = "Итого расход"
@@ -146,8 +158,9 @@ def cab_plus(request, p_choice_room, brands_views):
         r = r.split()
         x = r[-1]
         c = r[-2]
+        save = None
         cosm = []
-        cosmetic_in_cab, choice_room = build_vir_cab(c)
+        cosmetic_in_cab, choice_room = build_vir_cab("Наименование")
         for i in range(len(cosmetic_in_cab)):
             if transliterate_def(cosmetic_in_cab[i][0])==x:
                 cosm.append((cosmetic_in_cab[i][1], cosmetic_in_cab[i][2]))
@@ -161,18 +174,20 @@ def cab_plus(request, p_choice_room, brands_views):
                 name_brands = str(transliterate_def(brands[el][0]))
         brands_ch = list(set(brands_ch))
         brands_ch.sort()
-        brands_ch_f = forms.ChoiceField(choices=brands_ch, label='')
+        brands_ch_f = forms.ChoiceField(choices=brands_ch, label='', initial = x)
 
     if request.method == "POST":
         form = Plus_cab(request.POST, request.FILES)
         if form.is_valid():
+            data = request.POST
+            print("=====")
+            print(data)
             x = str(request.build_absolute_uri())
             r = x.replace('/', ' ')
             r = r.split()
             x = r[-1]
             c = r[-2]
             info_base = form.cleaned_data
-            print(c)
             return redirect(
                 f"/plus/{c}/{info_base.get('brands_ch_f').lower()}")
     else:
