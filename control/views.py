@@ -148,6 +148,23 @@ def write_in_excel(name, master, my_data):
                     data[coord + str(i)] = (my_data[j][1])
     workbook_temp.save('etual.xlsx')
 
+def plus_in_exel(cabinet, product):
+    workbook_temp = openpyxl.load_workbook('etual.xlsx')
+    '''    data = workbook_temp["Производство"]
+    simvols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']
+    coord = None
+    for i in range(4, 1000):
+        if transliterate_def(data[str(simvols[i]) + '1'].value) == cabinet:
+            coord = simvols[i]
+            break
+
+    for j in range(0, len(product)):
+        for i in range(1, 1000):
+            if product[j][0] == data['D' + str(i)].value:
+                if str(product[j][1]) != '':
+                    data[coord + str(i)] = (product[j][1])
+    workbook_temp.save('etual.xlsx')'''
+
 
 def cab_plus(request, p_choice_room, brands_views):
     class Plus_cab(forms.Form):
@@ -162,8 +179,8 @@ def cab_plus(request, p_choice_room, brands_views):
         cosm = []
         cosmetic_in_cab, choice_room = build_vir_cab("Наименование")
         for i in range(len(cosmetic_in_cab)):
-            if transliterate_def(cosmetic_in_cab[i][0])==x:
-                cosm.append((cosmetic_in_cab[i][1], cosmetic_in_cab[i][2]))
+            if transliterate_def(cosmetic_in_cab[i][0]) == x:
+                cosm.append((i, cosmetic_in_cab[i][1], cosmetic_in_cab[i][2]))
         name_brands = None
         if len(x) == 3:
             name_brands = brands[0][0]
@@ -182,11 +199,21 @@ def cab_plus(request, p_choice_room, brands_views):
             data = request.POST
             print("=====")
             print(data)
+            print(Plus_cab.cosm)
             x = str(request.build_absolute_uri())
             r = x.replace('/', ' ')
             r = r.split()
             x = r[-1]
             c = r[-2]
+            #запись добавления в ексель
+            product = []
+            for key in data:
+                for num in Plus_cab.cosm:
+                    if str(num[0]) == str(key) and str(data[key]) != '':
+                        product.append((str(num[1]), str(num[2]), str(data[key])))
+            print("product = "+ str(product))
+            #plus_in_exel(c, product)
+
             info_base = form.cleaned_data
             return redirect(
                 f"/plus/{c}/{info_base.get('brands_ch_f').lower()}")

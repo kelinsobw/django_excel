@@ -1,6 +1,6 @@
 {% extends "control/base.html" %}
 {% load crispy_forms_filters %}
-{% block title %}Взвешивание{% endblock %}
+{% block title %}Выдача{% endblock %}
 {% block content %}
 <style>
 table, td {
@@ -15,17 +15,31 @@ table, td {
     {{ form|crispy }}
         <table style="width:100%">
 
+
+
+              <thead>
+    <tr>
+      <th>Производитель</th>
+
+      <th>Обьем</th>
+        <th>Количество для выдачи</th>
+
+
+    </tr>
+  </thead>
+
     {% for row in form.cosm %}
 
     <tr>
-        <td>{{row.0}}</td>
         <td>{{row.1}}</td>
+        <td>{{row.2}}</td>
 
-        <td><input size="10" type="text", value="", name={{row.4}}></td>
+        <td><input size="10" type="text", value="", name={{row.0}}></td>
 
     {% endfor %}
            </tr>
     </table>
+        <br>
     <p><input type="submit" aria-label="Отправить"  ></p>
 </form>
 {% endblock %}
