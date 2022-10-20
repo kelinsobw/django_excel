@@ -9,6 +9,12 @@ import os
 from django.http import HttpResponse
 
 
+def history_save(text):
+    f = open('history.txt', 'a')
+    f.write(str(datetime.datetime.now()) + text + '\n')
+    f.close()
+
+
 def plus(request):
     class Plus(forms.Form):
         head = read_file('head')
@@ -127,6 +133,7 @@ def start_otchet(name, master, my_data):
 
 
 def write_in_excel(name, master, my_data):
+
     my_data = list(my_data.items())
     del my_data[0]
     for i in range(len(my_data)):
@@ -145,25 +152,30 @@ def write_in_excel(name, master, my_data):
         for i in range(1, 1000):
             if cosmetic_in_cab[j][1] == data['D'+str(i)].value:
                 if str(my_data[j][1]) != '':
+                    temp = data[coord + str(i)].value
                     data[coord + str(i)] = (my_data[j][1])
+                    history_save(str(" в кабинете "+str(name)+" у мастера "+ master+" изменен вес " +str(data['D' + str(i)].value)+" c "+str(temp)+" на "+str(my_data[j][1])))
     workbook_temp.save('etual.xlsx')
 
 def plus_in_exel(cabinet, product):
     workbook_temp = openpyxl.load_workbook('etual.xlsx')
-    '''    data = workbook_temp["Производство"]
+    data = workbook_temp["Производство"]
     simvols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']
     coord = None
     for i in range(4, 1000):
         if transliterate_def(data[str(simvols[i]) + '1'].value) == cabinet:
             coord = simvols[i]
             break
-
     for j in range(0, len(product)):
         for i in range(1, 1000):
             if product[j][0] == data['D' + str(i)].value:
                 if str(product[j][1]) != '':
-                    data[coord + str(i)] = (product[j][1])
-    workbook_temp.save('etual.xlsx')'''
+                    try:
+                        data[coord + str(i)] = float((product[j][2]).replace(",", ".")) + float(data[coord + str(i)].value)
+                    except:
+                        data[coord + str(i)] = float((product[j][2]).replace(",", "."))
+
+    workbook_temp.save('etual.xlsx')
 
 
 def cab_plus(request, p_choice_room, brands_views):
@@ -211,9 +223,7 @@ def cab_plus(request, p_choice_room, brands_views):
                 for num in Plus_cab.cosm:
                     if str(num[0]) == str(key) and str(data[key]) != '':
                         product.append((str(num[1]), str(num[2]), str(data[key])))
-            print("product = "+ str(product))
-            #plus_in_exel(c, product)
-
+            plus_in_exel(c, product)
             info_base = form.cleaned_data
             return redirect(
                 f"/plus/{c}/{info_base.get('brands_ch_f').lower()}")
