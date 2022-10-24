@@ -133,7 +133,6 @@ def start_otchet(name, master, my_data):
 
 
 def write_in_excel(name, master, my_data):
-
     my_data = list(my_data.items())
     del my_data[0]
     for i in range(len(my_data)):
@@ -157,6 +156,7 @@ def write_in_excel(name, master, my_data):
                     history_save(str(" в кабинете "+str(name)+" у мастера "+ master+" изменен вес " +str(data['D' + str(i)].value)+" c "+str(temp)+" на "+str(my_data[j][1])))
     workbook_temp.save('etual.xlsx')
 
+
 def plus_in_exel(cabinet, product):
     workbook_temp = openpyxl.load_workbook('etual.xlsx')
     data = workbook_temp["Производство"]
@@ -174,7 +174,7 @@ def plus_in_exel(cabinet, product):
                         data[coord + str(i)] = float((product[j][2]).replace(",", ".")) + float(data[coord + str(i)].value)
                     except:
                         data[coord + str(i)] = float((product[j][2]).replace(",", "."))
-
+                    history_save(" в кабинет "+str(cabinet)+" выдан продукт "+product[j][0])
     workbook_temp.save('etual.xlsx')
 
 
