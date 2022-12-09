@@ -13,6 +13,11 @@ table, td {
     <br>
 
     {{ form }}
+        <div>
+      <input type="checkbox" id="scales" name="scales" checked>
+      <label for="scales">Scales</label>
+    </div>
+
         <table style="width:100%">
 
               <thead>
@@ -26,6 +31,7 @@ table, td {
 
     </tr>
   </thead>
+
 
     {% for row in form.cosmetic_in_cab %}
 

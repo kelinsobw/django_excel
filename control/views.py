@@ -94,6 +94,7 @@ def start_otchet(name, master, my_data):
         if str(my_data[i][1]) != '':
             if float(old_info[i][3])-float(my_data[i][1])>=0:
                 otchet.append([old_info[i][0], old_info[i][1], float(old_info[i][3])-float(my_data[i][1]), float(old_info[i][4])*(float(old_info[i][3])-float(my_data[i][1]))])
+                print(old_info)
             else:
                 error_weidth()
 
@@ -101,9 +102,9 @@ def start_otchet(name, master, my_data):
     for i in range(0, x):
         if i != 0 and otchet[i][0] != otchet[i - 1][0]:
             data["E" + str(row)] = itog_brand
-            data["E" + str(row)].font = Font(bold=True, size=14)
+            data["E" + str(row)].font = Font(bold=True, size=35)
             data["D" + str(row)] = "Итого"
-            data["D" + str(row)].font = Font(bold=True, size=14)
+            data["D" + str(row)].font = Font(bold=True, size=35)
             itog_brand = 0
             row = row + 2
         data["B" + str(row)] = otchet[i][0]
@@ -115,15 +116,18 @@ def start_otchet(name, master, my_data):
         row = row + 1
 
     data["E" + str(row)] = itog_brand
-    data["E" + str(row)].font = Font(bold=True, size=14)
+    data["E" + str(row)].font = Font(bold=True, size=35)
     data["D" + str(row)] = "Итого"
-    data["D" + str(row)].font = Font(bold=True, size=14)
+    data["D" + str(row)].font = Font(bold=True, size=35)
     data["E" + str(row + 1)] = itog
-    data["E" + str(row + 1)].font = Font(bold=True, size=14)
+    data["E" + str(row + 1)].font = Font(bold=True, size=35)
     data["D" + str(row + 1)] = "Итого расход"
-    data["D" + str(row + 1)].font = Font(bold=True, size=14)
+    data["D" + str(row + 1)].font = Font(bold=True, size=35)
     dir_path = pathlib.Path.cwd()
-    data["B3"] = str(datetime.date.today() - datetime.timedelta(days=1))
+    day = str(datetime.date.today() - datetime.timedelta(days=1))
+    day = datetime.date.today()-datetime.timedelta(days=1)
+    day = str(day.strftime("%d/%m/%Y"))
+    data["B3"] = day
     try:
         os.makedirs('history' + "\\" + str(datetime.date.today()) + '')
     except:
@@ -134,10 +138,15 @@ def start_otchet(name, master, my_data):
 
 def write_in_excel(name, master, my_data):
     my_data = list(my_data.items())
+    otchet_choise = False
+    if my_data[1][1] == "on":
+        otchet_choise = True
+    del my_data[1]
     del my_data[0]
     for i in range(len(my_data)):
         my_data[i]=(my_data[0], my_data[i][1].replace(",", "."))
-    start_otchet(name,master,my_data)
+    if otchet_choise != False:
+        start_otchet(name,master,my_data)
     cosmetic_in_cab, choice_room = build_vir_cab(name)
     workbook_temp = openpyxl.load_workbook('etual.xlsx')
     data = workbook_temp["Производство"]
@@ -207,11 +216,9 @@ def cab_plus(request, p_choice_room, brands_views):
 
     if request.method == "POST":
         form = Plus_cab(request.POST, request.FILES)
+
         if form.is_valid():
             data = request.POST
-            print("=====")
-            print(data)
-            print(Plus_cab.cosm)
             x = str(request.build_absolute_uri())
             r = x.replace('/', ' ')
             r = r.split()
@@ -246,6 +253,8 @@ def cabinet_weight(request, cabinet, master):
     name = name.split()
     master = str(name[-1])
     name = str(name[-2])
+
+
     if request.method == "POST":
         form = Cabinet_weight(request.POST, request.FILES)
         if form.is_valid():
