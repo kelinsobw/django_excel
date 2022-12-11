@@ -1,7 +1,6 @@
 import pandas as pd
 import pytils
 from django import forms
-from django.http import request
 
 
 def transliterate_def(str_obj):
@@ -43,7 +42,6 @@ def read_file(setting):
             temp.append((data[el][2], data[el][3]))
         data = temp
     return(data)
-
 
 
 class Weighing(forms.Form):

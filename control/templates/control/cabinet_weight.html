@@ -5,6 +5,7 @@
 <style>
 table, td {
   border:1px solid black;}
+
 </style>
 
 <form method="POST" xmlns="http://www.w3.org/1999/html">
@@ -13,39 +14,55 @@ table, td {
     <br>
 
     {{ form }}
-        <div>
-      <input type="checkbox" id="scales" name="scales" checked>
-      <label for="scales">Scales</label>
-    </div>
-
+    <table style="width:100%">
+        <tr>
+            <td>
+                <div>
+                    <input type="checkbox" id="scales" name="scales" checked>
+                    <label for="scales">Сформировать отчет</label>
+                </div>
+            </td>
+            <td>
+                <p><label for="id_field">Отчет приготовил:</label>
+                    <select name="field" id="idfield">\n
+                        <option value="Мурач А.С.">Мурач А.С.</option>\n
+                        <option value="Седюкевич В.В.">Седюкевич В.В.</option>\n
+                    </select></p>
+            </td>
+             <td>
+                <p><label for="id_field">Взвешивал:</label>
+                    <select name="field1" id="id_field">\n
+                        <option value="Мурач А.С.">Мурач А.С.</option>\n
+                        <option value="Седюкевич В.В.">Седюкевич В.В.</option>\n
+                    </select></p>
+            </td>
+        </tr>
         <table style="width:100%">
 
-              <thead>
-    <tr>
-      <th>Производитель</th>
-      <th>Наименование</th>
-      <th>Обьем</th>
-      <th>Остаток</th>
-        <th>Текущее значение</th>
+            <thead>
+            <tr>
+                <th>Производитель</th>
+                <th>Наименование</th>
+                <th>Обьем</th>
+                <th>Остаток</th>
+                <th>Текущее значение</th>
+            </tr>
+            </thead>
+            <br>
 
+            {% for row in form.cosmetic_in_cab %}
 
-    </tr>
-  </thead>
+            <tr>
+                <td>{{row.0}}</td>
+                <td width="80%">{{row.1}}</td>
+                <td>{{row.2}}</td>
+                <td>{{row.3}}</td>
 
+                <td><input size="10" type="text" , value="" , name={{row.4}}></td>
 
-    {% for row in form.cosmetic_in_cab %}
-
-    <tr>
-        <td>{{row.0}}</td>
-        <td width="80%">{{row.1}}</td>
-        <td>{{row.2}}</td>
-        <td>{{row.3}}</td>
-
-        <td><input size="10" type="text", value="", name={{row.4}}></td>
-
-    {% endfor %}
-           </tr>
-    </table>
-    <p><input type="submit" aria-label="Отправить"  ></p>
+                {% endfor %}
+            </tr>
+        </table>
+        <p><input type="submit" aria-label="Отправить"></p>
 </form>
 {% endblock %}

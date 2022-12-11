@@ -66,7 +66,7 @@ def build_vir_cab(cabinet, setting=0): #setting == 0=>don't price, 1>price
     return(cosmetic_in_cab, choice_room)
 
 
-def start_otchet(name, master, my_data):
+def start_otchet(name, master, my_data, author, rab):
     workbook_temp = openpyxl.load_workbook('shablon.xlsx')
     data = workbook_temp["Шаблон"]
     row = 7
@@ -124,10 +124,11 @@ def start_otchet(name, master, my_data):
     data["D" + str(row + 1)] = "Итого расход"
     data["D" + str(row + 1)].font = Font(bold=True, size=35)
     dir_path = pathlib.Path.cwd()
-    day = str(datetime.date.today() - datetime.timedelta(days=1))
     day = datetime.date.today()-datetime.timedelta(days=1)
-    day = str(day.strftime("%d/%m/%Y"))
+    day = str(day.strftime("%d/%m/%Y")).replace('/', '.')
     data["B3"] = day
+    data["B5"] = author
+    data["B6"] = rab
     try:
         os.makedirs('history' + "\\" + str(datetime.date.today()) + '')
     except:
@@ -141,12 +142,16 @@ def write_in_excel(name, master, my_data):
     otchet_choise = False
     if my_data[1][1] == "on":
         otchet_choise = True
+    author = my_data[2][1]
+    rab = my_data[3][1]
+    del my_data[3]
+    del my_data[2]
     del my_data[1]
     del my_data[0]
     for i in range(len(my_data)):
         my_data[i]=(my_data[0], my_data[i][1].replace(",", "."))
     if otchet_choise != False:
-        start_otchet(name,master,my_data)
+        start_otchet(name,master,my_data,author,rab)
     cosmetic_in_cab, choice_room = build_vir_cab(name)
     workbook_temp = openpyxl.load_workbook('etual.xlsx')
     data = workbook_temp["Производство"]
@@ -259,6 +264,7 @@ def cabinet_weight(request, cabinet, master):
         form = Cabinet_weight(request.POST, request.FILES)
         if form.is_valid():
             data = request.POST
+            print(data)
             write_in_excel(name, master, data)
             return redirect(f"/", {"form": form})
     else:
